@@ -1,0 +1,10 @@
+Yet another 3D tetris, but I think there's no such which is written in CL.
+
+How to use:
+Copy cl-tetris3d.asd into directory in which ASDF keeps its *.asd files.
+Run command (asdf:oos 'asdf:load-op 'cl-tetris3d) in your interpreter.
+Now you can start to play (cl-tetris3d:run).
+Enjoy!
+
+Attention!
+I've tested only under SBCL.
