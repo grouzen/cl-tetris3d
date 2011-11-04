@@ -7,8 +7,8 @@
 
 (in-package :cl-tetris3d)
 
-(defparameter *width* 500)
-(defparameter *height* 500)
+(defparameter *width* 1024)
+(defparameter *height* 768)
 (defparameter *bpp* 32)
 
 (defparameter *z* -50)
@@ -375,3 +375,5 @@
                (draw-world arena figure)
                (sdl:update-display))))))
 
+(defun make-executable ()
+  #+sbcl (sb-ext:save-lisp-and-die "cl-tetris3d" :toplevel #'cl-tetris3d:run :executable t))

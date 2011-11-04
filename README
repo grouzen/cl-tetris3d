@@ -2,9 +2,16 @@ Yet another 3D tetris, but I think there's no such which is written in CL.
 
 How to use:
 Copy cl-tetris3d.asd into directory in which ASDF keeps its *.asd files.
-Run command (asdf:oos 'asdf:load-op 'cl-tetris3d) in your interpreter.
+Run command (asdf:oos 'asdf:load-op :cl-tetris3d) in your interpreter.
 Now you can start to play (cl-tetris3d:run).
 Enjoy!
+
+Make executable:
+Run sbcl from shell(from slime it doesn't work).
+Then run commands in your sbcl repl:
+> (asdf:oos 'asdf:load-op :cl-tetris3d)
+> (cl-tetris3d:make-executable)
+Now you can execute ./cl-tetris3d from shell and have fun!
 
 Attention!
 I've tested only under SBCL.

@@ -7,4 +7,4 @@
 
 (defpackage #:cl-tetris3d
   (:use :cl)
-  (:export #:run))
+  (:export #:run #:make-executable))
