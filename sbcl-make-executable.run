@@ -1,0 +1,5 @@
+#!/usr/local/bin/sbcl --script
+
+(require 'asdf)
+(asdf:oos 'asdf:load-op :cl-tetris3d) 
+(cl-tetris3d:make-executable)
