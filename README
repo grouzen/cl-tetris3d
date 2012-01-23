@@ -7,11 +7,13 @@ Now you can start to play (cl-tetris3d:run).
 Enjoy!
 
 Make executable:
-Run sbcl from shell(from slime it doesn't work).
-Then run commands in your sbcl repl:
+Run interpeter from shell(from slime it doesn't work).
+Then run commands in repl:
 > (asdf:oos 'asdf:load-op :cl-tetris3d)
 > (cl-tetris3d:make-executable)
+Or for sbcl you can run ./sbcl-make-executable.run
 Now you can execute ./cl-tetris3d from shell and have fun!
+
 
 Attention!
 I've tested only under SBCL.

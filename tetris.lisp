@@ -8,7 +8,7 @@
 (in-package :cl-tetris3d)
 
 (defparameter *width* 1024)
-(defparameter *height* 768)
+(defparameter *height* 586)
 (defparameter *bpp* 32)
 
 (defparameter *z* -50)
