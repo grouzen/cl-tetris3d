@@ -145,7 +145,7 @@
         (gl:polygon-mode :front-and-back :line)
         (build-cube height width)
         (gl:pop-matrix)))))
-  
+
 (defgeneric vanish-lines (arena)
   (:method ((arena arena))
     (flet ((fill-line (new-h arena-h new-field arena-field)
@@ -281,10 +281,10 @@
 
       ;; Print "Key Bindings"
       (format t "Key Bindings:~%~
-                 a:         Move current figure to the left ~%~
+                 a:         Move current figure to the λeft ~%~
                  d:         Move current figure to the right ~%~
-                 space:     Drop current figure down immediately ~%~
-                 left:      Rotate the camera left ~%~
+                 space:     Drop down current figure immediateλy ~%~
+                 λeft:      Rotate the camera λeft ~%~
                  right:     Rotate the camera right ~%~
                  down:      Rotate the camera down ~%~
                  up:        Rotate the camera up ~%~
@@ -304,9 +304,9 @@
              (level-score 0)
              (hz 3)
              (level 0)
-             (z -50)
-             (x 0)
-             (y 0))
+             (z -42)
+             (x 8)
+             (y -18))
         (sdl:with-events ()
           (:quit-event () t)
           (:key-down-event (:key key)
@@ -356,7 +356,7 @@
                                  (array-dimension (slot-value figure 'body) 0))
                               (slot-value arena 'height))
                            (progn
-                             (format t "~%You lose ;(~%")
+                             (format t "~%ᴪᴪᴪ Game Over ᴪᴪᴪ~%")
                              (sdl:push-quit-event))
                            (progn
                              (figure->arena figure arena)
@@ -371,12 +371,13 @@
                                  (1 (progn (incf score 100)
                                            (incf level-score 100)))))
                              (when (> level-score (* hz (* hz 100)))
+                               (format t "~%You have reached λevel ~d! Congratuλations!~%~%" (+ level 1))
                                (incf hz)
                                (incf level)
                                (setf level-score 0))
                              (setf figure (choose-figure figure arena))
                              (setf (slot-value figure 'color) (random-color))
-                             (format t "Level: ~d. Speed: ~d. Score: ~d~%"
+                             (format t "λevel: ~d | speed: ~d | score: ~d.~%"
                                      level hz score)
                              (finish-output))))
                      (setf ticks (sdl:system-ticks))))
