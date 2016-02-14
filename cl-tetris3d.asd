@@ -17,7 +17,7 @@
   :author "Nedokushev Michael <grouzen.hexy@gmail.com>"
   :license "MIT (also see COPYING file for details)"
   :description "Clone of the original game a tetris"
-  :depends-on (cl-opengl lispbuilder-sdl cl-glu)
+  :depends-on (#:cl-opengl #:lispbuilder-sdl #:cl-glu)
   :serial t
   :components ((:file "package")
                (:file "tetris")))
