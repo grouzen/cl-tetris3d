@@ -2,7 +2,7 @@
 ;;;;
 ;;;; Clone of the original game a tetris.
 ;;;;
-;;;; Author: Nedokushev Michael <grouzen.hexy@gmail.com>
+;;;; Author: Nedokushev Michael <michael.nedokushev@gmail.com>
 ;;;;
 ;;;; This file released under some license restrictions,
 ;;;; see COPYING file.
@@ -12,11 +12,11 @@
 
 (defsystem cl-tetris3d
   :name "cl-tetris3d"
-  :version "0.0.0"
-  :maintainer "Nedokushev Michael <grouzen.hexy@gmail.com>"
-  :author "Nedokushev Michael <grouzen.hexy@gmail.com>"
+  :version "0.0.1"
+  :maintainer "Nedokushev Michael <michael.nedokushev@gmail.com>"
+  :author "Nedokushev Michael <michael.nedokushev@gmail.com>"
   :license "MIT (also see COPYING file for details)"
-  :description "Clone of the original game a tetris"
+  :description "Yet another 3D Tetris clone"
   :depends-on (#:cl-opengl #:lispbuilder-sdl #:cl-glu)
   :serial t
   :components ((:file "package")
