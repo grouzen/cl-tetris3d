@@ -6,5 +6,5 @@
 ;;;; see COPYING file.
 
 (defpackage #:cl-tetris3d
-  (:use :cl)
+  (:use :cl #:iterate)
   (:export #:run #:make-executable))

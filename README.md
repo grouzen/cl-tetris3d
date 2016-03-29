@@ -11,6 +11,20 @@ Yet another 3D tetris.
 
 Enjoy!
 
+## Controls:
+
+  * A - move figure left
+  * D - move figure right
+  * S - move figure down
+  * space - immediately land figure
+  * Q - rotate figure counterclockwise
+  * E - rotate figure clockwise
+
+  * P - pause/unpause
+  * Esc - quit
+  * left, right, up, down, page up, page down -- rotate camera
+
+
 ## Make executable (SBCL Only!):
 
 There are two ways to do it:

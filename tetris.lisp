@@ -113,19 +113,29 @@
    (make-array '(1 4) :initial-contents '((1 1 1 1)))
    (make-array '(2 3) :initial-contents '((1 1 1) (0 1 0)))))
 
-(defgeneric rotate-figure (figure)
+(defgeneric rotate-figure-clockwise (figure)
   (:method ((figure figure))
     (with-slots (body) figure
       (let ((prev-body body))
         (setf body (make-array (list (array-dimension prev-body 1)
                                      (array-dimension prev-body 0))))
-        (do ((prev-w 0 (1+ prev-w))
-             (h (1- (array-dimension body 0)) (1- h)))
-            ((< h 0))
-          (do ((prev-h 0 (1+ prev-h))
-               (w 0 (1+ w)))
-              ((> prev-h (1- (array-dimension prev-body 0))))
-            (setf (aref body h w) (aref prev-body prev-h prev-w))))))))
+	(iter (for prev-w from 0)
+	      (for h from (1- (array-dimension body 0)) downto 0)
+	      (iter (for prev-h from 0)
+		    (for w from 0 to (1- (array-dimension prev-body 0)))
+		    (setf (aref body h w) (aref prev-body prev-h prev-w))))))))
+
+(defgeneric rotate-figure-counterclockwise (figure)
+  (:method ((figure figure))
+    (with-slots (body) figure
+      (let ((prev-body body))
+        (setf body (make-array (list (array-dimension prev-body 1)
+                                     (array-dimension prev-body 0))))
+	(iter (for prev-w from 0)
+	      (for h from 0 to (1- (array-dimension body 0)))
+	      (iter (for prev-h from 0)
+		    (for w from (1- (array-dimension prev-body 0)) downto 0)
+		    (setf (aref body h w) (aref prev-body prev-h prev-w))))))))
 
 (defgeneric draw-arena (arena)
   (:method ((arena arena))
@@ -207,8 +217,8 @@
             (build-cube height width)
             (gl:pop-matrix)))))))
   
-(defgeneric move-figure (figure arena)
-  (:method ((figure figure) (arena arena))
+(defgeneric move-figure (figure arena &key move-sideways)
+  (:method ((figure figure) (arena arena) &key move-sideways)
     (flet ((walls-collision-p (figure arena)
              (with-slots (x y x-d body) figure 
                (with-slots (width height field) arena
@@ -240,9 +250,10 @@
           (let ((terminate nil))
             (when (not (walls-collision-p figure arena))
               (setf x (+ x x-d)))
-            (if (not (floor-collision-p figure arena))
-                (setf y (- y 1))
-                (setf terminate t))
+	    (if (not move-sideways)
+		(if (not (floor-collision-p figure arena))
+		    (setf y (- y 1))
+		    (setf terminate t)))
             (setf x-d 0)
             terminate))))))
   
@@ -334,19 +345,34 @@
                                   (do ()
                                       ((move-figure figure arena))))
                                  ((eq key :SDL-KEY-a)
-                                  (setf (slot-value figure 'x-d) -1))
+                                  (setf (slot-value figure 'x-d) -1)
+				  (move-figure figure arena :move-sideways t))
                                  ((eq key :SDL-KEY-d)
-                                  (setf (slot-value figure 'x-d) 1))
+                                  (setf (slot-value figure 'x-d) 1)
+				  (move-figure figure arena :move-sideways t))
                                  ((eq key :SDL-KEY-s)
+                                  (move-figure figure arena))
+                                 ((eq key :SDL-KEY-e)
                                   (with-slots (x y color body) figure
                                     (let ((tmp (make-instance 'figure
                                                               :x x
                                                               :y y
                                                               :color color
                                                               :body body)))
-                                      (rotate-figure tmp)
+                                      (rotate-figure-clockwise tmp)
                                       (unless (rotate-collision-p tmp arena)
-                                        (rotate-figure figure)))))))
+                                        (rotate-figure-clockwise figure)))))
+                                 ((eq key :SDL-KEY-q)
+                                  (with-slots (x y color body) figure
+                                    (let ((tmp (make-instance 'figure
+                                                              :x x
+                                                              :y y
+                                                              :color color
+                                                              :body body)))
+                                      (rotate-figure-counterclockwise tmp)
+                                      (unless (rotate-collision-p tmp arena)
+                                        (rotate-figure-counterclockwise figure)))))
+				 ))
           
           (:idle ()
                  (when run
