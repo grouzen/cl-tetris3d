@@ -119,11 +119,11 @@
       (let ((prev-body body))
         (setf body (make-array (list (array-dimension prev-body 1)
                                      (array-dimension prev-body 0))))
-	(iter (for prev-w from 0)
-	      (for h from (1- (array-dimension body 0)) downto 0)
-	      (iter (for prev-h from 0)
-		    (for w from 0 to (1- (array-dimension prev-body 0)))
-		    (setf (aref body h w) (aref prev-body prev-h prev-w))))))))
+        (iter (for prev-w from 0)
+              (for h from (1- (array-dimension body 0)) downto 0)
+              (iter (for prev-h from 0)
+                    (for w from 0 to (1- (array-dimension prev-body 0)))
+                    (setf (aref body h w) (aref prev-body prev-h prev-w))))))))
 
 (defgeneric rotate-figure-counterclockwise (figure)
   (:method ((figure figure))
@@ -131,11 +131,11 @@
       (let ((prev-body body))
         (setf body (make-array (list (array-dimension prev-body 1)
                                      (array-dimension prev-body 0))))
-	(iter (for prev-w from 0)
-	      (for h from 0 to (1- (array-dimension body 0)))
-	      (iter (for prev-h from 0)
-		    (for w from (1- (array-dimension prev-body 0)) downto 0)
-		    (setf (aref body h w) (aref prev-body prev-h prev-w))))))))
+        (iter (for prev-w from 0)
+              (for h from 0 to (1- (array-dimension body 0)))
+              (iter (for prev-h from 0)
+                    (for w from (1- (array-dimension prev-body 0)) downto 0)
+                    (setf (aref body h w) (aref prev-body prev-h prev-w))))))))
 
 (defgeneric draw-arena (arena)
   (:method ((arena arena))
@@ -216,7 +216,7 @@
             (gl:translate (+ (* w 2) (* x 2)) (+ (* h 2) (* y 2)) 0)
             (build-cube height width)
             (gl:pop-matrix)))))))
-  
+
 (defgeneric move-figure (figure arena &key move-sideways)
   (:method ((figure figure) (arena arena) &key move-sideways)
     (flet ((walls-collision-p (figure arena)
@@ -250,13 +250,13 @@
           (let ((terminate nil))
             (when (not (walls-collision-p figure arena))
               (setf x (+ x x-d)))
-	    (if (not move-sideways)
-		(if (not (floor-collision-p figure arena))
-		    (setf y (- y 1))
-		    (setf terminate t)))
+            (if (not move-sideways)
+                (if (not (floor-collision-p figure arena))
+                    (setf y (- y 1))
+                    (setf terminate t)))
             (setf x-d 0)
             terminate))))))
-  
+
 (defgeneric rotate-collision-p (figure arena)
   (:method ((figure figure) (arena arena))
     (with-slots (width height field) arena
@@ -268,7 +268,7 @@
                       (< (+ y h) 0)
                       (not (null (aref field (+ y h) (+ x w)))))
               (return-from rotate-collision-p t))))))))
-  
+
 (defgeneric choose-figure (figure arena)
   (:method ((figure figure) (arena arena))
     (let ((choise (random 7)))
@@ -280,135 +280,143 @@
       figure)))
 
 (defun run (&key (width 480) (height 640) (bpp 32))
-    (sdl:with-init ()
-      (unless (sdl:window width height
-                          :bpp bpp
-                          :opengl t
-                          :opengl-attributes '((:sdl-gl-doublebuffer 1)))
-        (error "~&Unable to create a SDL window~%"))
-      (setf (sdl:frame-rate) 40)
-      (sdl:enable-key-repeat 50 50)
-      (gl-init width height)
+  (sdl:with-init ()
+    (unless (sdl:window width height
+                        :bpp bpp
+                        :opengl t
+                        :opengl-attributes '((:sdl-gl-doublebuffer 1)))
+      (error "~&Unable to create a SDL window~%"))
+    (setf (sdl:frame-rate) 40)
+    (sdl:enable-key-repeat 50 50)
+    (gl-init width height)
 
-      ;; Print "Key Bindings"
-      (format t "Key Bindings:~%~
-                 a:         Move current figure to the λeft ~%~
-                 d:         Move current figure to the right ~%~
-                 space:     Drop down current figure immediateλy ~%~
-                 λeft:      Rotate the camera λeft ~%~
-                 right:     Rotate the camera right ~%~
-                 down:      Rotate the camera down ~%~
-                 up:        Rotate the camera up ~%~
-                 page down: Zoom in the camera ~%~
-                 page up:   Zoom out the camera~%~%")
-      (format t "Get ready! We start the game!~%~%")
-      
-      (let* ((arena
-              (make-instance 'arena
-                             :width 10
-                             :height 18
-                             :field (make-array '(18 10) :initial-element nil)))
-             (figure (choose-figure (make-instance 'figure) arena))
-             (ticks (sdl:system-ticks))
-             (run t)
-             (score 0)
-             (level-score 0)
-             (hz 3)
-             (level 0)
-             (z -42)
-             (x 8)
-             (y -18))
-        (sdl:with-events ()
-          (:quit-event () t)
-          (:key-down-event (:key key)
-                           (cond ((eq key :SDL-KEY-ESCAPE)
-                                  (sdl:push-quit-event))
-                                 ((eq key :SDL-KEY-p)
-                                  (if run
-                                      (setf run nil)
-                                      (setf run t)))
-                                 ((eq key :SDL-KEY-PAGEUP)
-                                  (unless (> (+ z 2) -38)
-                                    (setf z (+ z 2))))
-                                 ((eq key :SDL-KEY-PAGEDOWN)
-                                  (when (> (- z 2) -80)
-                                    (setf z (- z 2))))
-                                 ((eq key :SDL-KEY-RIGHT)
-                                  (setf y (+ y 2)))
-                                 ((eq key :SDL-KEY-LEFT)
-                                  (setf y (- y 2)))
-                                 ((eq key :SDL-KEY-UP)
-                                  (setf x (+ x 2)))
-                                 ((eq key :SDL-KEY-DOWN)
-                                  (setf x (- x 2)))
-                                 ((eq key :SDL-KEY-SPACE)
-                                  (do ()
-                                      ((move-figure figure arena))))
-                                 ((eq key :SDL-KEY-a)
-                                  (setf (slot-value figure 'x-d) -1)
-				  (move-figure figure arena :move-sideways t))
-                                 ((eq key :SDL-KEY-d)
-                                  (setf (slot-value figure 'x-d) 1)
-				  (move-figure figure arena :move-sideways t))
-                                 ((eq key :SDL-KEY-s)
-                                  (move-figure figure arena))
-                                 ((eq key :SDL-KEY-e)
-                                  (with-slots (x y color body) figure
-                                    (let ((tmp (make-instance 'figure
-                                                              :x x
-                                                              :y y
-                                                              :color color
-                                                              :body body)))
-                                      (rotate-figure-clockwise tmp)
-                                      (unless (rotate-collision-p tmp arena)
-                                        (rotate-figure-clockwise figure)))))
-                                 ((eq key :SDL-KEY-q)
-                                  (with-slots (x y color body) figure
-                                    (let ((tmp (make-instance 'figure
-                                                              :x x
-                                                              :y y
-                                                              :color color
-                                                              :body body)))
-                                      (rotate-figure-counterclockwise tmp)
-                                      (unless (rotate-collision-p tmp arena)
-                                        (rotate-figure-counterclockwise figure)))))
-				 ))
-          
-          (:idle ()
-                 (when run
-                   (when (> (- (sdl:system-ticks) ticks) (/ 1000 hz))
-                     (when (move-figure figure arena)
-                       (if (> (+ (slot-value figure 'y)
-                                 (array-dimension (slot-value figure 'body) 0))
-                              (slot-value arena 'height))
-                           (progn
-                             (format t "~%ᴪᴪᴪ Game Over ᴪᴪᴪ~%")
-                             (sdl:push-quit-event))
-                           (progn
-                             (figure->arena figure arena)
-                             (let ((lines (vanish-lines arena)))
-                               (case lines
-                                 (4 (progn (incf score 1000)
-                                           (incf level-score 1000)))
-                                 (3 (progn (incf score 600)
-                                           (incf level-score 600)))
-                                 (2 (progn (incf score 300)
-                                           (incf level-score 300)))
-                                 (1 (progn (incf score 100)
-                                           (incf level-score 100)))))
-                             (when (> level-score (* hz (* hz 100)))
-                               (format t "~%You have reached λevel ~d! Congratuλations!~%~%" (+ level 1))
-                               (incf hz)
-                               (incf level)
-                               (setf level-score 0))
-                             (setf figure (choose-figure figure arena))
-                             (setf (slot-value figure 'color) (random-color))
-                             (format t "λevel: ~d | speed: ~d | score: ~d.~%"
-                                     level hz score)
-                             (finish-output))))
-                     (setf ticks (sdl:system-ticks))))
-                 (draw-world arena figure :x x :y y :z z)
-                 (sdl:update-display))))))
+    ;; Print "Key Bindings"
+    (format t "Key Bindings:~%~
+                 a:         move figure λeft ~%~
+                 d:         move current figure right ~%~
+                 s:         move current figure down ~%~
+                 q:         rotate figure counterclockwise ~%~
+                 e:         rotate figure clockwise ~%~
+                 space:     immediateλy land figure ~%~
+                 λeft:      rotate camera left ~%~
+                 right:     rotate camera right ~%~
+                 down:      rotate camera down ~%~
+                 up:        rotate camera up ~%~
+                 page down: zoom in camera ~%~
+                 page up:   zoom out camera ~%~
+                 p:         pause/unpause ~%~
+                 Esc:       quit ~%~%")
+    (format t "Get ready! We start the game!~%~%")
+    
+    (let* ((arena
+            (make-instance 'arena
+                           :width 10
+                           :height 18
+                           :field (make-array '(18 10) :initial-element nil)))
+           (figure (choose-figure (make-instance 'figure) arena))
+           (ticks (sdl:system-ticks))
+           (run t)
+           (score 0)
+           (level-score 0)
+           (hz 3)
+           (level 0)
+           (z -42)
+           (x 8)
+           (y -18))
+      (sdl:with-events ()
+        (:quit-event () t)
+        (:key-down-event (:key key)
+                         (cond ((eq key :SDL-KEY-ESCAPE)
+                                (sdl:push-quit-event))
+                               ((eq key :SDL-KEY-p)
+                                (if run
+                                    (progn
+                                      (format t "~%Game is paused!~%")
+                                      (setf run nil))
+                                    (progn
+                                      (format t "Game is unpaused!~%~%")
+                                      (setf run t))))
+                               ((eq key :SDL-KEY-PAGEUP)
+                                (unless (> (+ z 2) -38)
+                                  (setf z (+ z 2))))
+                               ((eq key :SDL-KEY-PAGEDOWN)
+                                (when (> (- z 2) -80)
+                                  (setf z (- z 2))))
+                               ((eq key :SDL-KEY-RIGHT)
+                                (setf y (+ y 2)))
+                               ((eq key :SDL-KEY-LEFT)
+                                (setf y (- y 2)))
+                               ((eq key :SDL-KEY-UP)
+                                (setf x (+ x 2)))
+                               ((eq key :SDL-KEY-DOWN)
+                                (setf x (- x 2)))
+                               ((eq key :SDL-KEY-SPACE)
+                                (do ()
+                                    ((move-figure figure arena))))
+                               ((eq key :SDL-KEY-a)
+                                (setf (slot-value figure 'x-d) -1)
+                                (move-figure figure arena :move-sideways t))
+                               ((eq key :SDL-KEY-d)
+                                (setf (slot-value figure 'x-d) 1)
+                                (move-figure figure arena :move-sideways t))
+                               ((eq key :SDL-KEY-s)
+                                (move-figure figure arena))
+                               ((eq key :SDL-KEY-e)
+                                (with-slots (x y color body) figure
+                                  (let ((tmp (make-instance 'figure
+                                                            :x x
+                                                            :y y
+                                                            :color color
+                                                            :body body)))
+                                    (rotate-figure-clockwise tmp)
+                                    (unless (rotate-collision-p tmp arena)
+                                      (rotate-figure-clockwise figure)))))
+                               ((eq key :SDL-KEY-q)
+                                (with-slots (x y color body) figure
+                                  (let ((tmp (make-instance 'figure
+                                                            :x x
+                                                            :y y
+                                                            :color color
+                                                            :body body)))
+                                    (rotate-figure-counterclockwise tmp)
+                                    (unless (rotate-collision-p tmp arena)
+                                      (rotate-figure-counterclockwise figure)))))))
+        
+        (:idle ()
+               (when run
+                 (when (> (- (sdl:system-ticks) ticks) (/ 1000 hz))
+                   (when (move-figure figure arena)
+                     (if (> (+ (slot-value figure 'y)
+                               (array-dimension (slot-value figure 'body) 0))
+                            (slot-value arena 'height))
+                         (progn
+                           (format t "~%ᴪᴪᴪ Game Over ᴪᴪᴪ~%")
+                           (sdl:push-quit-event))
+                         (progn
+                           (figure->arena figure arena)
+                           (let ((lines (vanish-lines arena)))
+                             (case lines
+                               (4 (progn (incf score 1000)
+                                         (incf level-score 1000)))
+                               (3 (progn (incf score 600)
+                                         (incf level-score 600)))
+                               (2 (progn (incf score 300)
+                                         (incf level-score 300)))
+                               (1 (progn (incf score 100)
+                                         (incf level-score 100)))))
+                           (when (> level-score (* hz (* hz 100)))
+                             (format t "~%You have reached λevel ~d! Congratuλations!~%~%" (+ level 1))
+                             (incf hz)
+                             (incf level)
+                             (setf level-score 0))
+                           (setf figure (choose-figure figure arena))
+                           (setf (slot-value figure 'color) (random-color))
+                           (format t "λevel: ~d | speed: ~d | score: ~d.~%"
+                                   level hz score)
+                           (finish-output))))
+                   (setf ticks (sdl:system-ticks))))
+               (draw-world arena figure :x x :y y :z z)
+               (sdl:update-display))))))
 
 (defun make-executable ()
   #+sbcl (sb-ext:save-lisp-and-die "cl-tetris3d" :toplevel #'cl-tetris3d:run :executable t))

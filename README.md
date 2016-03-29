@@ -4,7 +4,7 @@ Yet another 3D tetris.
 
 ## How to run:
 
-```
+``` lisp
 > (ql:quickload :cl-tetris3d)
 > (cl-tetris3d:run)
 ```
@@ -22,7 +22,7 @@ Enjoy!
 
   * P - pause/unpause
   * Esc - quit
-  * left, right, up, down, page up, page down -- rotate camera
+  * left, right, up, down, page up, page down -- rotate and zoom camera
 
 
 ## Make executable (SBCL Only!):
