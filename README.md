@@ -2,6 +2,8 @@
 
 Yet another 3D tetris.
 
+![Screenshot](https://paste.opensuse.org/images/53051428.jpg)
+
 ## How to run:
 
 ``` lisp
