@@ -271,6 +271,7 @@
 
 (defgeneric choose-figure (figure arena)
   (:method ((figure figure) (arena arena))
+    (setf *random-state* (make-random-state t))
     (let ((choise (random 7)))
       (with-slots (x y) figure
         (with-slots (width height) arena
