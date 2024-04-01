@@ -17,7 +17,7 @@
     (gl:viewport 0 0 width height)
     (gl:matrix-mode :projection)
     (gl:load-identity)
-    (glu:perspective 60 (/ width height) 0.5 100)
+    (glu:perspective 60 (/ width height) 0.1 100)
     (gl:matrix-mode :modelview)
     (gl:load-identity)))
 
@@ -151,7 +151,7 @@
               (:yellow (gl:color 1 1 0))
               (:blue (gl:color 0 0 1)))
             (build-cube height width)))
-        (gl:color 0 1 0)
+        (gl:color 0.5 0.8 0.5)
         (gl:polygon-mode :front-and-back :line)
         (build-cube height width)
         (gl:pop-matrix)))))
@@ -280,14 +280,16 @@
       (setf (body figure) (nth choise *figures*))
       figure)))
 
-(defun run (&key (width 480) (height 640) (bpp 32))
+(defun run (&key (width 1920) (height 1080) (fullscreen t) (bpp 32))
   (sdl:with-init ()
     (unless (sdl:window width height
                         :bpp bpp
+			                  :title-caption "CL Tetris 3D"
+                        :fullscreen fullscreen
                         :opengl t
                         :opengl-attributes '((:sdl-gl-doublebuffer 1)))
       (error "~&Unable to create a SDL window~%"))
-    (setf (sdl:frame-rate) 40)
+    (setf (sdl:frame-rate) 60)
     (sdl:enable-key-repeat 50 50)
     (gl-init width height)
 
