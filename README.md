@@ -1,14 +1,5 @@
 # CLetris
 
-## How to run:
-
-``` lisp
-> (ql:quickload :cl-tetris)
-> (cl-tetris:run)
-```
-
-Enjoy!
-
 ## Controls:
 
   * left/right - move figure left/right
@@ -17,19 +8,18 @@ Enjoy!
   * space - pause/unpause
   * esc - quit
 
-## Make executable (SBCL Only!):
 
-There are two ways to do it:
 
-1. Run interpeter from shell (it doesn't work within Slime),
-and run the following commands from REPL:
-```
+## How to run:
+**1. From the REPL**
+
+``` lisp
 > (ql:quickload :cl-tetris)
-> (cl-tetris:make-executable)
+> (cl-tetris:run)
 ```
+**2. Make executable (SBCL only)**
 
-2.  Run ```./sbcl-make-executable.run``` script
-
-After that you should get the ```./cl-tetris``` binary.
+Run ```./sbcl-make-executable.run``` script,
+then the ```./cl-tetris``` binary.
 
 
