@@ -13,13 +13,13 @@
     (gl:viewport 0 0 width height)
     (gl:matrix-mode :projection)
     (gl:load-identity)
-    (gl:ortho 0 (+ width 80) 0 (+ height 80) -1 1)
+    (gl:ortho 0 (+ width 100) 0 (+ height 100) -1 1)
     (gl:matrix-mode :modelview)
     (gl:load-identity)))
 
 (defun random-color ()
-  (let ((color (random 3))
-        (colors (list :pink :violet :blue)))
+  (let ((color (random 6))
+        (colors (list :pink :thistle :rosy-brown :powder-blue :dark-sea-green :salmon)))
     (nth color colors)))
 
 (defmacro do-dotimes-twice ((h w) &body body)
@@ -46,10 +46,10 @@
    (body :initarg :body :accessor body :initform nil)))
 
 (defclass arena ()
-  ((width :initarg :width :accessor width :initform 10)
+  ((width :initarg :width :accessor width :initform 12)
    (height :initarg :height :accessor height :initform 18)
    (field :initarg :field 
-          :initform (make-array '(18 10) :initial-element nil)
+          :initform (make-array '(18 12) :initial-element nil)
           :accessor field)))
 
 (defparameter *figures*
@@ -80,18 +80,21 @@
       (gl:translate 40 40 0)
       (do-dotimes-twice (height width)
         (gl:push-matrix)
-        (gl:translate (* w 30) (* h 30) 0)
+        (gl:translate (* w 60) (* h 60) 0)
         (let ((cell (aref field h w)))
           (when (not (null cell))
             (gl:polygon-mode :front-and-back :fill)
             (case cell
-              (:pink (gl:color 1 0.41 0.71))
-              (:violet (gl:color 0.93 0.51 0.93))
-              (:blue (gl:color 0 0 1)))
-            (build-square 25 25)))
+              (:pink (gl:color 1 0.75 0.8))
+              (:thistle (gl:color 0.85 0.75 0.85))
+              (:rosy-brown (gl:color 0.74 0.56 0.56))
+              (:powder-blue (gl:color 0.69 0.88 0.9))
+              (:dark-sea-green (gl:color 0.56 0.74 0.56))
+              (:salmon (gl:color 1 0.63 0.48)))
+            (build-square 50 50)))
         (gl:color 0.3 0.3 0.3)
         (gl:polygon-mode :front-and-back :line)
-        (build-square 25 25)
+        (build-square 50 50)
         (gl:pop-matrix))
       (gl:pop-matrix))))
 
@@ -139,15 +142,18 @@
   (:method ((figure figure) (arena arena))
     (with-slots (x y color body) figure
       (case color
-        (:pink (gl:color 1 0.41 0.71))
-        (:violet (gl:color 0.93 0.51 0.93))
-        (:blue (gl:color 0 0 1)))
+        (:pink (gl:color 1 0.75 0.8))
+        (:thistle (gl:color 0.85 0.75 0.85))
+        (:rosy-brown (gl:color 0.74 0.56 0.56))
+        (:powder-blue (gl:color 0.69 0.88 0.9))
+        (:dark-sea-green (gl:color 0.56 0.74 0.56))
+        (:salmon (gl:color 1 0.63 0.48)))
       (gl:polygon-mode :front-and-back :fill)
       (do-dotimes-twice ((array-dimension body 0) (array-dimension body 1))
         (when (= (aref body h w) 1)
           (gl:push-matrix)
-          (gl:translate (+ 40 (* w 30) (* x 30)) (+ (* h 30) (* y 30)) 0)
-          (build-square 25 25)
+          (gl:translate (+ 40 (* w 60) (* x 60)) (+ (* h 60) (* y 60)) 0)
+          (build-square 50 50)
           (gl:pop-matrix))))))
 
 (defgeneric move-figure (figure arena &key move-sideways)
@@ -213,13 +219,13 @@
       (setf (body figure) (nth choise *figures*))
       figure)))
 
-(defun run (&key (width 800) (height 1000) (bpp 32))
+(defun run (&key (width 640) (height 1000) (bpp 32))
   (sdl:with-init ()
     (unless (sdl:window width height
                         :bpp bpp
                         :opengl t
-                        :position :centered
-                       ;; :title "Tetris"
+                        :position :center
+                        :title-caption "Werka's Tetris"
                         :opengl-attributes '((:sdl-gl-doublebuffer 1)))
       (error "Unable to create SDL window"))
     (setf (sdl:frame-rate) 40)
@@ -235,9 +241,9 @@
        Esc:   quit~%
  Level | Speed | Score~%")
         (let* ((arena (make-instance 'arena
-                                :width 10
+                                :width 12
                                 :height 18
-                                :field (make-array '(18 10) :initial-element nil)))
+                                :field (make-array '(18 12) :initial-element nil)))
            (figure (choose-figure (make-instance 'figure) arena))
            (ticks (sdl:system-ticks))
            (run t)
