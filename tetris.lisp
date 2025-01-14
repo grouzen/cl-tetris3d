@@ -62,7 +62,7 @@
    (make-array '(1 4) :initial-contents '((1 1 1 1)))
    (make-array '(2 3) :initial-contents '((1 1 1) (0 1 0)))))
 
-(defgeneric rotate-figure-clockwise (figure)
+(defgeneric rotate-figure (figure)
   (:method ((figure figure))
     (with-slots (body) figure
       (let* ((h (array-dimension body 0))
@@ -70,7 +70,7 @@
              (new-body (make-array (list w h))))
         (dotimes (i h)
           (dotimes (j w)
-            (setf (aref new-body j (- h i 1)) (aref body i j))))
+            (setf (aref new-body j (- w i 1)) (aref body i j)))) ;; change h to w for rotating the other way round
         (setf body new-body)))))
 
 (defgeneric draw-arena (arena)
@@ -291,12 +291,12 @@
                            (figure->arena figure arena)
                            (let ((lines (vanish-lines arena)))
                              (case lines
-                               (4 (incf score 1000) (incf level-score 1000))
-                               (3 (incf score 600) (incf level-score 600))
-                               (2 (incf score 300) (incf level-score 300))
-                               (1 (incf score 100) (incf level-score 100))))
-                           (when (> level-score (* hz (* hz 100)))
-                             (format t "~%Level ~d reached!~%" (+ 1 level))
+                               (4 (incf score 100) (incf level-score 100))
+                               (3 (incf score 60) (incf level-score 60))
+                               (2 (incf score 30) (incf level-score 30))
+                               (1 (incf score 10) (incf level-score 10))))
+                           (when (> level-score (+ level 50))
+                             (format t "~%Level ~d reached! Increasing speed to ~d ~%" (+ 1 level) (+ 1 hz))
                              (incf hz)
                              (incf level)
                              (setf level-score 0))
