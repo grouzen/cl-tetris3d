@@ -1,0 +1,7 @@
+#!/usr/bin/sbcl --script
+
+(load "~/.sbclrc")
+
+(asdf:load-asd (merge-pathnames "cl-tetris3d.asd" (uiop:getcwd))) 
+(asdf:load-system :cl-tetris3d)
+(cl-tetris3d:run)
