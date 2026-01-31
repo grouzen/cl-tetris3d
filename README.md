@@ -6,10 +6,24 @@ Yet another 3D tetris.
 
 ## How to run:
 
+Install dependencies:
+```shell
+emerge -av sbcl sdl-ttf libsdl rlwrap
+```
+
+Run `rlwrap sbcl`, install the package from `quicklisp` and run the game:
 ``` lisp
 > (ql:quickload :cl-tetris3d)
 > (cl-tetris3d:run)
 ```
+
+### Development (run in the project's directory)
+```lisp
+(asdf:load-asd (merge-pathnames "cl-tetris3d.asd" (uiop:getcwd))) 
+(asdf:load-system :cl-tetris3d)
+(cl-tetris3d:run)
+```
+
 
 Enjoy!
 

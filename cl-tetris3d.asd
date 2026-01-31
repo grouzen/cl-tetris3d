@@ -19,7 +19,7 @@
   :author "Nedokushev Michael <michael.nedokushev@gmail.com>"
   :license "MIT (also see COPYING file for details)"
   :description "Yet another 3D Tetris clone"
-  :depends-on (#:cl-opengl #:lispbuilder-sdl #:cl-glu #:iterate)
+  :depends-on (#:cl-opengl #:lispbuilder-sdl #:lispbuilder-sdl-ttf #:cl-glu #:iterate)
   :serial t
   :components ((:file "package")
                (:file "tetris")))

@@ -17,7 +17,7 @@
     (gl:viewport 0 0 width height)
     (gl:matrix-mode :projection)
     (gl:load-identity)
-    (glu:perspective 60 (/ width height) 0.5 100)
+    (glu:perspective 60 (/ width height) 0.1 100)
     (gl:matrix-mode :modelview)
     (gl:load-identity)))
 
@@ -151,8 +151,8 @@
               (:yellow (gl:color 1 1 0))
               (:blue (gl:color 0 0 1)))
             (build-cube height width)))
-        (gl:color 0 1 0)
-        (gl:polygon-mode :front-and-back :line)
+        (gl:color 0.5 0.8 0.5)
+        (gl:polygon-mode :front-and-back :point)
         (build-cube height width)
         (gl:pop-matrix)))))
 
@@ -280,14 +280,17 @@
       (setf (body figure) (nth choise *figures*))
       figure)))
 
-(defun run (&key (width 480) (height 640) (bpp 32))
+(defun run (&key (width 1920) (height 1080) (fullscreen nil) (bpp 32))
   (sdl:with-init ()
     (unless (sdl:window width height
                         :bpp bpp
+			                  :title-caption "CL Tetris 3D"
+                        :fullscreen fullscreen
                         :opengl t
                         :opengl-attributes '((:sdl-gl-doublebuffer 1)))
       (error "~&Unable to create a SDL window~%"))
-    (setf (sdl:frame-rate) 40)
+    (setf (sdl:frame-rate) 60)
+    (sdl:initialise-default-font sdl:*font-9x18*)
     (sdl:enable-key-repeat 50 50)
     (gl-init width height)
 
@@ -417,7 +420,61 @@
                            (finish-output))))
                    (setf ticks (sdl:system-ticks))))
                (draw-world arena figure :x x :y y :z z)
+              ;  (sdl:render-string-blended "hello")
+               (sdl:draw-string-blended-* "Hello" 10 10)
                (sdl:update-display))))))
 
 (defun make-executable ()
   #+sbcl (sb-ext:save-lisp-and-die "cl-tetris3d" :toplevel #'cl-tetris3d:run :executable t))
+
+
+; (ql:quickload :lispbuilder-sdl)
+; (use-package :sdl)
+; (use-package :sdl-ttf)
+; (use-package :sdl-opengl)
+
+; (defun init ()
+;   (sdl:with-init ()
+;     (sdl:window 800 600 :opengl t :resizable t :caption "OpenGL Text Demo")
+;     (sdl:gl-set-attribute :doublebuffer 1)
+;     (gl:enable :blend)
+;     (gl:blend-func :src-alpha :one-minus-src-alpha)
+;     (gl:ortho 0 800 600 0 -1 1)))
+
+; (defun load-texture-from-surface (surface)
+;   (let ((w (sdl:surface-width surface))
+;         (h (sdl:surface-height surface))
+;         (format (if (sdl:surface-palettized-p surface)
+;                     :rgba
+;                     :rgba)))
+;     (gl:bind-texture :texture-2d (gl:gen-textures 1))
+;     (gl:tex-image-2d :texture-2d 0 :rgba w h 0 format :unsigned-byte (sdl:surface-pixels surface))
+;     (gl:tex-parameter :texture-2d :texture-min-filter :linear)
+;     (gl:tex-parameter :texture-2d :texture-mag-filter :linear)
+;     (gl:tex-parameter :texture-2d :texture-wrap-s :clamp-to-edge)
+;     (gl:tex-parameter :texture-2d :texture-wrap-t :clamp-to-edge)))
+
+; (defun render-text (text font-file font-size x y)
+;   (sdl:with-font (font font-file font-size)
+;     (sdl:with-color (color 255 255 255)
+;       (let ((surface (sdl:ttext-solid font text color)))
+;         (load-texture-from-surface surface)
+;         (gl:color 1 1 1)
+;         (gl:bind-texture :texture-2d)
+;         (gl:begin :quads)
+;         (gl:tex-coord 0 0) (gl:vertex x y)
+;         (gl:tex-coord 1 0) (gl:vertex (+ x (sdl:surface-width surface)) y)
+;         (gl:tex-coord 1 1) (gl:vertex (+ x (sdl:surface-width surface)) (+ y (sdl:surface-height surface))))
+;         (gl:tex-coord 0 1) (gl:vertex x (+ y (sdl:surface-height surface))))
+;       (gl:end))))
+
+; (defun render-loop ()
+;   (loop
+;     (sdl:with-events (event)
+;       (sdl:quit-event ()
+;         (return-from render-loop))
+;       (otherwise
+;        (gl:clear-color 0 0 0 1)
+;        (gl:clear :color-buffer-bit)
+;        (render-text "Hello, OpenGL!" "path/to/your/font.ttf" 24 100 100)
+;        (sdl:gl-swap-window)))))
